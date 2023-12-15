@@ -161,3 +161,4 @@ cython_debug/
 
 # Raw data files
 .data/
+data/
