@@ -15,8 +15,8 @@ def preprocess_data(data, downsampling_factor=10):
     # Add a channel dimension because the CNN expects a channel dimension
     # processed_data = np.expand_dims(processed_data, axis=-1)
 
-    logging.info(f"Data preprocessing completed. Shape after preprocessing: {processed_data.shape}")
-    return processed_data
+    logging.info(f"Data preprocessing completed. Shape after preprocessing: {data.shape}")
+    return data
 
 def create_cnn_model(input_shape):
     logging.info(f"Creating CNN model with input shape: {input_shape}")
