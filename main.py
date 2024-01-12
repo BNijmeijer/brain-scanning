@@ -7,6 +7,8 @@ import tensorflow as tf
 import keras as ks
 from keras import models, layers, losses
 
+import cnn, rnn
+
 def get_dataset_name(path_with_dir : str):
     dataset_name = path_with_dir.split('/')[-1]
     dataset_name = '_'.join(dataset_name.split('_')[:-1])   # Removes final identifier number
@@ -42,21 +44,38 @@ def downsample(data, labels, factor):
     print(np.shape(sampled_data))
     return sampled_data, sampled_labels
 
-
-
-def train_model(model, x_train, y_train):
-    
-    return #history
-
-def scale_data(train_data, test_data):
+def minmax_scale_data(train_data, test_data):
+    """Scales the given datasets to the interval [0,1], inclusive."""
     min_value = np.minimum(np.min(train_data), np.min(test_data))
     max_value = np.maximum(np.max(train_data), np.max(test_data))
-    train_data = (train_data - min_value) * max_value
-    test_data = (test_data - min_value) * max_value
+    train_data = (train_data - min_value) / max_value
+    test_data = (test_data - min_value) / max_value
 
     assert(np.all(map(lambda x: x>=0 and x<=1, train_data)))
     assert(np.all(map(lambda x: x>=0 and x<=1, test_data)))
     return train_data, test_data
+
+def prep_data(X_train, y_train, X_test, y_test, downsample_factor = 8):
+
+    # Downsample and scale train and test data
+    ds_X_train, ds_y_train = downsample(X_train, y_train, downsample_factor)
+    ds_X_test, ds_y_test = downsample(X_test, y_test, downsample_factor)
+    scaled_X_train, scaled_X_test = minmax_scale_data(ds_X_train, ds_X_test)
+    
+    # Construct validation set from training set
+    X_train = []
+    y_train = []
+    X_val = []
+    y_val = []
+    for (i, x) in enumerate(scaled_X_train):
+        if i % 8 == 0:
+            X_val.append(x)
+            y_val.append(ds_y_train[i])
+        else:
+            X_train.append(x)
+            y_train.append(ds_y_train[i])
+    
+    return X_train, y_train, X_val, y_val, scaled_X_test, ds_y_test
 
 def main():
     
@@ -64,17 +83,14 @@ def main():
     cross_folder = './data/Cross/'
     intra_folder = './data/Intra/'
 #    train_data_cross, train_labels_cross = extract_data(os.path.join(cross_folder,'train'))
-    train_data_intra, train_labels_intra = extract_data(os.path.join(intra_folder,'train'))
-    downsampled_data, downsampled_labels = downsample(train_data_intra[:1],train_labels_intra[:1],8)
+    X_train_intra, y_train_intra = extract_data(os.path.join(intra_folder,'train'))
+    X_test_intra, y_test_intra = extract_data(os.path.join(intra_folder,'test'))
+    X_train_intra, y_train_intra, X_val_intra, y_val_intra, X_test_intra, y_test_intra = prep_data(X_train_intra, y_train_intra, X_test_intra, y_test_intra)
+
+    conv_model = cnn.build_model()
+    conv_fit = cnn.train_model(conv_model, [X_train_intra], y_train_intra, [X_val_intra], y_val_intra)
+
     return
-    test_data_intra, test_labels_intra = extract_data(os.path.join(intra_folder,'test'))
-
-    # Rescale data to [0,1] interval
-    train_data_intra, test_data_intra = scale_data(train_data_intra, test_data_intra)
-
-    # Convert into TF datasets
-    train_set = tf.data.Dataset.from_tensor_slices((train_data_intra, train_labels_intra))
-    test_set = tf.data.Dataset.from_tensor_slices((test_data_intra, test_labels_intra))
 
 if __name__ == '__main__':
     main()
