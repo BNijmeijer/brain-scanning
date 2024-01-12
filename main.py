@@ -27,6 +27,23 @@ def extract_data(data_folder : str):
     print(np.shape(full_data))
     return full_data, labels
 
+def downsample(data, labels, factor):
+
+    sampled_data = []
+    sampled_labels = []
+
+    for (i,ex) in enumerate(data):
+        label = labels[i]
+        downsampled_data = [ex[:,j::factor] for j in range(factor)]
+        for d in downsampled_data:
+            sampled_data.append(d)
+            sampled_labels.append(label)
+    
+    print(np.shape(sampled_data))
+    return sampled_data, sampled_labels
+
+
+
 def train_model(model, x_train, y_train):
     
     return #history
@@ -46,8 +63,10 @@ def main():
     # Fetch raw data
     cross_folder = './data/Cross/'
     intra_folder = './data/Intra/'
-#    train_data_cross = extract_data(os.path.join(cross_folder,'train'))
+#    train_data_cross, train_labels_cross = extract_data(os.path.join(cross_folder,'train'))
     train_data_intra, train_labels_intra = extract_data(os.path.join(intra_folder,'train'))
+    downsampled_data, downsampled_labels = downsample(train_data_intra[:1],train_labels_intra[:1],8)
+    return
     test_data_intra, test_labels_intra = extract_data(os.path.join(intra_folder,'test'))
 
     # Rescale data to [0,1] interval
@@ -56,25 +75,6 @@ def main():
     # Convert into TF datasets
     train_set = tf.data.Dataset.from_tensor_slices((train_data_intra, train_labels_intra))
     test_set = tf.data.Dataset.from_tensor_slices((test_data_intra, test_labels_intra))
-
-    model = models.Sequential()
-    model.add(layers.Conv1D(16,4, activation='relu', input_shape=(248,35624)))
-    model.add(layers.MaxPooling1D(2))
-    model.add(layers.Conv1D(32,4, activation='relu'))
-    model.add(layers.MaxPooling1D(4))
-    model.add(layers.Conv1D(32,4, activation='relu'))
-    model.add(layers.Flatten())
-    model.add(layers.Dense(32, activation='relu'))
-    model.add(layers.Dense(4))
-
-    model.summary()
-#    model_history = train_model(model, train_data_intra, train_labels_intra)
-    model.compile(optimizer='adam',
-                  loss = losses.SparseCategoricalCrossentropy(from_logits=True),
-                  metrics = ['accuracy'])
-    history = model.fit(train_set, epochs=10,
-                        validation_data=test_set)
-
 
 if __name__ == '__main__':
     main()
