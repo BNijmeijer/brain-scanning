@@ -70,3 +70,24 @@ def relabel(s):
 def relabel_all(labels):
     lab  = [relabel(s) for s in labels]
     return np.array(lab)
+
+def create_multiple_datasets(matrix, amount):
+    res = []
+
+    for i in range(amount):
+        res.append(matrix[:,np.arange(i, matrix.shape[1], amount)])
+
+    max_size = min(r.shape[1] for r in res)
+    res = [r[:,:max_size] for r in res]
+
+    return res
+    
+def preprocess_multiple(matrices, factor):
+    mats = []
+    for matrix in matrices:
+        mats.extend(create_multiple_datasets(matrix, factor))
+        
+    zs_mat = [np.transpose(zscore(matrix)) for matrix in mats]
+    return np.array(zs_mat)
+    
+
