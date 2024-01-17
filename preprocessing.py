@@ -101,12 +101,23 @@ def downsample(X, y, downsample_factor=8):
 
     for (i,data) in enumerate(X):
         X_train.extend([data[:,j::downsample_factor] for j in range(downsample_factor)])
-        y_train.extend(np.repeat(y[i],8))
+        y_train.extend(np.repeat(y[i], downsample_factor))
 
     return X_train, y_train
 
-def build_val(X,y):
-    return X[:-1], X[-1], y[:-1], y[-1]
+def build_val(X, y, val_split = 8):
+    X_t = []
+    y_t = []
+    X_val = []
+    y_val = []
+    for i in range(np.shape(X)[0]):
+        if i % val_split == 0:
+            X_val.append(X[i])
+            y_val.append(y[i])
+        else:
+            X_t.append(X[i])
+            y_t.append(y[i])
+    return np.array(X_t), np.array(X_val), np.array(y_t), np.array(y_val)
 
 def preprocess_all(train_intra, labels_train_intra, test_intra, labels_test_intra, train_cross, labels_train_cross, test1_cross, labels_test1_cross, test2_cross, labels_test2_cross, test3_cross, labels_test3_cross):
     # Downsample all data
@@ -140,11 +151,18 @@ def preprocess_all(train_intra, labels_train_intra, test_intra, labels_test_intr
     
     # Un-black-magicification
     split_data = np.split(scaled_data, delims, axis=0)
-    assert (split_data[0] == X_train_intra)
+    assert (np.shape(split_data[0]) == np.shape(X_train_intra))
+
+    X_train_intra = split_data[0]
+    X_test_intra = split_data[1]
+    X_train_cross = split_data[2]
+    X_test1_cross = split_data[3]
+    X_test2_cross = split_data[4]
+    X_test3_cross = split_data[5]
 
     # Create validation datasets
-    X_train_intra, X_val_intra, y_train_intra, y_val_intra = build_val(scaled_data[0], y_train_intra)
-    X_train_cross, X_val_cross, y_train_cross, y_val_cross = build_val(scaled_data[1], y_train_cross)
+    X_train_intra, X_val_intra, y_train_intra, y_val_intra = build_val(X_train_intra, y_train_intra)
+    X_train_cross, X_val_cross, y_train_cross, y_val_cross = build_val(X_train_cross, y_train_cross)
 
-    return X_train_intra, y_train_intra, X_val_intra, y_val_intra, scaled_data[2], y_test_intra, X_train_cross, y_train_cross, X_val_cross, y_val_cross, scaled_data[3], y1_test_cross, scaled_data[4], y2_test_cross, scaled_data[5], y3_test_cross
+    return X_train_intra, y_train_intra, X_val_intra, y_val_intra, X_test_intra, np.array(y_test_intra), X_train_cross, y_train_cross, X_val_cross, y_val_cross, X_test1_cross, np.array(y1_test_cross), X_test2_cross, np.array(y2_test_cross), X_test3_cross, np.array(y3_test_cross)
     

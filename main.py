@@ -8,29 +8,70 @@ import preprocessing as p
 import models as m
 
 def main():
-    y_intra_train, x_intra_train, y_intra_test, x_intra_test = p.load_intra()
+    if not os.path.exists("./prepped_data_intra.npz"):
+        # Load and preprocess data from scratch
+        y_intra_train, x_intra_train, y_intra_test, x_intra_test = p.load_intra()
 
-    y_cross_train, x_cross_train = p.load_cross_train()
-    y1_cross_test, x1_cross_test = p.load_cross_test("1") # corresponds to the folders
-    y2_cross_test, x2_cross_test = p.load_cross_test("2")
-    y3_cross_test, x3_cross_test = p.load_cross_test("3")
+        y_cross_train, x_cross_train = p.load_cross_train()
+        y1_cross_test, x1_cross_test = p.load_cross_test("1") # corresponds to the folders
+        y2_cross_test, x2_cross_test = p.load_cross_test("2")
+        y3_cross_test, x3_cross_test = p.load_cross_test("3")
 
-    amount = 5
+        amount = 5
 
-    X_train_intra, y_train_intra,\
-        X_val_intra, y_val_intra,\
-        X_test_intra, y_test_intra,\
-        X_train_cross, y_train_cross,\
-        X_val_cross, y_val_cross,\
-        X1_test_cross, y1_test_cross, \
-        X2_test_cross, y2_test_cross, \
-        X3_test_cross, y3_test_cross = p.preprocess_all(x_intra_train, y_intra_train, \
-                                                        x_intra_test, y_intra_test, \
-                                                        x_cross_train, y_cross_train, \
-                                                        x1_cross_test, y1_cross_test, \
-                                                        x2_cross_test, y2_cross_test, \
-                                                        x3_cross_test, y3_cross_test)
-
+        X_train_intra, y_train_intra,\
+            X_val_intra, y_val_intra,\
+            X_test_intra, y_test_intra,\
+            X_train_cross, y_train_cross,\
+            X_val_cross, y_val_cross,\
+            X_test1_cross, y_test1_cross, \
+            X_test2_cross, y_test2_cross, \
+            X_test3_cross, y_test3_cross = p.preprocess_all(x_intra_train, y_intra_train, \
+                                                            x_intra_test, y_intra_test, \
+                                                            x_cross_train, y_cross_train, \
+                                                            x1_cross_test, y1_cross_test, \
+                                                            x2_cross_test, y2_cross_test, \
+                                                            x3_cross_test, y3_cross_test)
+        # Save data for later use
+        np.savez('prepped_data_intra',
+                 X_train_intra = X_train_intra,
+                 y_train_intra = y_train_intra,
+                 X_val_intra = X_val_intra,
+                 y_val_intra = y_val_intra,
+                 X_test_intra = X_test_intra,
+                 y_test_intra = y_test_intra)
+        np.savez('prepped_data_cross',
+                 X_train_cross = X_train_cross,
+                 y_train_cross = y_train_cross,
+                 X_val_cross = X_val_cross,
+                 y_val_cross = y_val_cross,
+                 X_test1_cross = X_test1_cross,
+                 y_test1_cross = y_test1_cross,
+                 X_test2_cross = X_test2_cross,
+                 y_test2_cross = y_test2_cross,
+                 X_test3_cross = X_test3_cross,
+                 y_test3_cross = y_test3_cross
+                 )
+    else: # Use existing data
+        with np.load('./prepped_data_intra.npz') as intra_file:
+            X_train_intra = intra_file['X_train_intra']
+            y_train_intra = intra_file['y_train_intra']
+            X_val_intra = intra_file['X_val_intra']
+            y_val_intra = intra_file['y_val_intra']
+            X_test_intra = intra_file['X_test_intra']
+            y_test_intra = intra_file['y_test_intra']
+        with np.load('./prepped_data_cross.npz') as cross_file:
+            X_train_cross = cross_file['X_train_cross']
+            y_train_cross = cross_file['y_train_cross']
+            X_val_cross = cross_file['X_val_cross']
+            y_val_cross = cross_file['y_val_cross']
+            X_test1_cross = cross_file['X_test1_cross']
+            y_test1_cross = cross_file['y_test1_cross']
+            X_test2_cross = cross_file['X_test2_cross']
+            y_test2_cross = cross_file['y_test2_cross']
+            X_test3_cross = cross_file['X_test3_cross']
+            y_test3_cross = cross_file['y_test3_cross']
+        
     # Splits the files into <amount> files and zscales these
     #x_train = p.preprocess_multiple(x_train, amount)
     #x_test = p.preprocess_multiple(x_test, amount)
