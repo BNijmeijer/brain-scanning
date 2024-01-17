@@ -80,17 +80,38 @@ def main():
     #y_train = np.repeat(p.relabel_all(y_train), amount)
     #y_test = np.repeat(p.relabel_all(y_test), amount)
 
+    y_train_intra = p.relabel_all(y_train_intra)
+    y_val_intra = p.relabel_all(y_val_intra)
+    y_test_intra = p.relabel_all(y_test_intra)
+    y_train_cross = p.relabel_all(y_train_cross)
+    y_val_cross = p.relabel_all(y_val_cross)
+    y_test1_cross = p.relabel_all(y_test1_cross)
+    y_test2_cross = p.relabel_all(y_test2_cross)
+    y_test3_cross = p.relabel_all(y_test3_cross)
+
     #y_train = np.array([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3])
     #y_test = np.array([0,0,1,1,2,2,3,3])
     print(np.shape(X_train_intra))
     print(np.shape(y_train_intra))
+    print(np.shape(X_val_intra))
+    print(np.shape(y_val_intra))
     print(np.shape(X_test_intra))
     print(np.shape(y_test_intra))
+    print(np.shape(X_train_cross))
+    print(np.shape(y_train_cross))
+    print(np.shape(X_val_cross))
+    print(np.shape(y_val_cross))
+    print(np.shape(X_test1_cross))
+    print(np.shape(y_test1_cross))
+    print(np.shape(X_test2_cross))
+    print(np.shape(y_test2_cross))
+    print(np.shape(X_test3_cross))
+    print(np.shape(y_test3_cross))
 
-    return
+#    return
 
 
-    model = m.rnnmodel()
+    model = m.rnnmodel(input_shape=(4453,248))
     model.build()
     #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
@@ -100,8 +121,10 @@ def main():
     model.summary()
 
     #epochs is maybe een hyperparameter?
-    history = model.fit(x_train, y_train, epochs=5, 
-                        validation_data=(x_test, y_test))
+    history = model.fit(np.transpose(X_train_intra,axes=(0,2,1)), y_train_intra, epochs=5, 
+                        validation_data=(np.transpose(X_val_intra, axes=(0,2,1)), y_val_intra))
+    
+    test_loss, test_acc = model.evaluate(np.transpose(X_test_intra, axes=(0,2,1)), y_test_intra, verbose = 2)
 
 
     # Plots the two accuracies against the epochs
