@@ -10,6 +10,6 @@ By default, the code will run an Intra-Cross comparison on a tuned RNN. Addition
 ## File structure
 The code is split up among three files:
 
-- `main.py`, and model training functions;
+- `main.py`, containing model comparison and model training functions;
 - `models.py`, containing all model definitions;
 - `preprocessing.py`, containing all code regarding data loading preprocessing.
