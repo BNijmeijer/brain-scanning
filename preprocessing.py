@@ -119,6 +119,16 @@ def build_val(X, y, val_split = 8):
             y_t.append(y[i])
     return np.array(X_t), np.array(X_val), np.array(y_t), np.array(y_val)
 
+def prep(X, y, build_validation_set = False):
+    # Create downsampled and scaled dataset. Also build validation dataset if necessary.
+    X_ds, y_ds = downsample(X, y)
+    X_scale = zscore(X_ds)
+    if build_validation_set:
+        X_train, X_val, y_train, y_val = build_val(X_scale, y_ds)
+        return X_train, y_train, X_val, y_val
+    else:
+        return X_scale, y_ds
+
 def preprocess_all(train_intra, labels_train_intra, test_intra, labels_test_intra, train_cross, labels_train_cross, test1_cross, labels_test1_cross, test2_cross, labels_test2_cross, test3_cross, labels_test3_cross):
     # Downsample all data
     X_train_intra, y_train_intra = downsample(train_intra, labels_train_intra)
@@ -127,6 +137,8 @@ def preprocess_all(train_intra, labels_train_intra, test_intra, labels_test_intr
     X_test1_cross, y1_test_cross = downsample(test1_cross, labels_test1_cross)
     X_test2_cross, y2_test_cross = downsample(test2_cross, labels_test2_cross)
     X_test3_cross, y3_test_cross = downsample(test3_cross, labels_test3_cross)
+
+    
 
     # Matrix black magic in order to make z-score scaling work
     # Order: intra (training, test), cross (training, test1, test2, test3)
@@ -161,8 +173,8 @@ def preprocess_all(train_intra, labels_train_intra, test_intra, labels_test_intr
     X_test3_cross = split_data[5]
 
     # Create validation datasets
-    X_train_intra, X_val_intra, y_train_intra, y_val_intra = build_val(X_train_intra, y_train_intra)
-    X_train_cross, X_val_cross, y_train_cross, y_val_cross = build_val(X_train_cross, y_train_cross)
+    X_train_intra, X_val_intra, y_train_intra, y_val_intra = build_val(zscore(X_train_intra), y_train_intra)
+    X_train_cross, X_val_cross, y_train_cross, y_val_cross = build_val(zscore(X_train_cross), y_train_cross)
 
     return X_train_intra, y_train_intra, X_val_intra, y_val_intra, X_test_intra, np.array(y_test_intra), X_train_cross, y_train_cross, X_val_cross, y_val_cross, X_test1_cross, np.array(y1_test_cross), X_test2_cross, np.array(y2_test_cross), X_test3_cross, np.array(y3_test_cross)
     

@@ -17,21 +17,23 @@ def main():
         y2_cross_test, x2_cross_test = p.load_cross_test("2")
         y3_cross_test, x3_cross_test = p.load_cross_test("3")
 
-        amount = 5
+        X_train_intra, y_train_intra, X_val_intra, y_val_intra = p.prep(x_intra_train, y_intra_train, build_validation_set = True)
+        X_test_intra, y_test_intra = p.prep(x_intra_test, y_intra_test)
+        X_train_cross, y_train_cross, X_val_cross, y_val_cross = p.prep(x_cross_train, y_cross_train, build_validation_set = True)
+        X_test1_cross, y_test1_cross = p.prep(x1_cross_test, y1_cross_test)
+        X_test2_cross, y_test2_cross = p.prep(x2_cross_test, y2_cross_test)
+        X_test3_cross, y_test3_cross = p.prep(x3_cross_test, y3_cross_test)
 
-        X_train_intra, y_train_intra,\
-            X_val_intra, y_val_intra,\
-            X_test_intra, y_test_intra,\
-            X_train_cross, y_train_cross,\
-            X_val_cross, y_val_cross,\
-            X_test1_cross, y_test1_cross, \
-            X_test2_cross, y_test2_cross, \
-            X_test3_cross, y_test3_cross = p.preprocess_all(x_intra_train, y_intra_train, \
-                                                            x_intra_test, y_intra_test, \
-                                                            x_cross_train, y_cross_train, \
-                                                            x1_cross_test, y1_cross_test, \
-                                                            x2_cross_test, y2_cross_test, \
-                                                            x3_cross_test, y3_cross_test)
+        # Relabel here for speed purposes
+        y_train_intra = p.relabel_all(y_train_intra)
+        y_val_intra = p.relabel_all(y_val_intra)
+        y_test_intra = p.relabel_all(y_test_intra)
+        y_train_cross = p.relabel_all(y_train_cross)
+        y_val_cross = p.relabel_all(y_val_cross)
+        y_test1_cross = p.relabel_all(y_test1_cross)
+        y_test2_cross = p.relabel_all(y_test2_cross)
+        y_test3_cross = p.relabel_all(y_test3_cross)
+
         # Save data for later use
         np.savez('prepped_data_intra',
                  X_train_intra = X_train_intra,
@@ -80,14 +82,6 @@ def main():
     #y_train = np.repeat(p.relabel_all(y_train), amount)
     #y_test = np.repeat(p.relabel_all(y_test), amount)
 
-    y_train_intra = p.relabel_all(y_train_intra)
-    y_val_intra = p.relabel_all(y_val_intra)
-    y_test_intra = p.relabel_all(y_test_intra)
-    y_train_cross = p.relabel_all(y_train_cross)
-    y_val_cross = p.relabel_all(y_val_cross)
-    y_test1_cross = p.relabel_all(y_test1_cross)
-    y_test2_cross = p.relabel_all(y_test2_cross)
-    y_test3_cross = p.relabel_all(y_test3_cross)
 
     #y_train = np.array([0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3])
     #y_test = np.array([0,0,1,1,2,2,3,3])
