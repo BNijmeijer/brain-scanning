@@ -1,0 +1,31 @@
+INTRA
+-------------------------------------------
+Train:
+Epoch 1/5
+7/7 - 27s 3s/step - loss: 1.3143 - accuracy: 0.7143 - val_loss: 0.5358 - val_accuracy: 0.8438
+Epoch 2/5
+7/7 - 19s 3s/step - loss: 0.3774 - accuracy: 0.9107 - val_loss: 0.2011 - val_accuracy: 1.0000
+Epoch 3/5
+7/7 - 19s 3s/step - loss: 0.1237 - accuracy: 0.9955 - val_loss: 0.0473 - val_accuracy: 1.0000
+Epoch 4/5
+7/7 - 18s 3s/step - loss: 0.0296 - accuracy: 1.0000 - val_loss: 0.0151 - val_accuracy: 1.0000
+Epoch 5/5
+7/7 - 18s 3s/step - loss: 0.0100 - accuracy: 1.0000 - val_loss: 0.0056 - val_accuracy: 1.0000
+Test: 2/2 - 1s - loss: 0.0061 - accuracy: 1.0000 - 860ms/epoch - 430ms/step
+
+CROSS
+---------------------------------------
+Train:
+Epoch 1/5
+14/14 - 41s 3s/step - loss: 1.3271 - accuracy: 0.4062 - val_loss: 0.9251 - val_accuracy: 0.6875
+Epoch 2/5
+14/14 - 35s 2s/step - loss: 0.7734 - accuracy: 0.7433 - val_loss: 0.5950 - val_accuracy: 0.8594
+Epoch 3/5
+14/14 - 34s 2s/step - loss: 0.4634 - accuracy: 0.9397 - val_loss: 0.2969 - val_accuracy: 1.0000
+Epoch 4/5
+14/14 - 34s 2s/step - loss: 0.1921 - accuracy: 0.9888 - val_loss: 0.0921 - val_accuracy: 1.0000
+Epoch 5/5
+14/14 - 34s 2s/step - loss: 0.0525 - accuracy: 0.9978 - val_loss: 0.0142 - val_accuracy: 1.0000
+Test1: 4/4 - 2s - loss: 0.2195 - accuracy: 0.9141 - 2s/epoch - 414ms/step
+Test2: 4/4 - 2s - loss: 2.4387 - accuracy: 0.6250 - 2s/epoch - 393ms/step
+Test3: 4/4 - 2s - loss: 0.8271 - accuracy: 0.7500 - 2s/epoch - 396ms/step

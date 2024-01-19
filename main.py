@@ -111,30 +111,45 @@ def main():
 #    return
 
 
-    model = m.rnnmodel(input_shape=(4453,248))
-    model.build()
+    intra_model = m.rnnmodel(input_shape=(4453,248))
+    intra_model.build()
     #model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    model.compile(optimizer='adam',
+    intra_model.compile(optimizer='adam',
                     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                     metrics=['accuracy'])
-    model.summary()
+    intra_model.summary()
 
     #epochs is maybe een hyperparameter?
-    history = model.fit(np.transpose(X_train_intra,axes=(0,2,1)), y_train_intra, epochs=5, 
-                        validation_data=(np.transpose(X_val_intra, axes=(0,2,1)), y_val_intra))
-    
-    test_loss, test_acc = model.evaluate(np.transpose(X_test_intra, axes=(0,2,1)), y_test_intra, verbose = 2)
+    intra_history = intra_model.fit(np.transpose(X_train_intra,axes=(0,2,1)), y_train_intra, epochs=5, 
+                       validation_data=(np.transpose(X_val_intra, axes=(0,2,1)), y_val_intra))
+    intra_test_loss, intra_test_acc = intra_model.evaluate(np.transpose(X_test_intra, axes=(0,2,1)), y_test_intra, verbose = 2)
 
+    cross_model = m.rnnmodel(input_shape=(4453,248))
+    cross_model.build()
+    cross_model.compile(optimizer='adam',
+                        loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                        metrics = ['accuracy'])
+    cross_model.summary()
+    cross_history = cross_model.fit(np.transpose(X_train_cross, axes=(0,2,1)), y_train_cross, epochs=5,
+                              validation_data = (np.transpose(X_val_cross, axes = (0,2,1)), y_val_cross))
+    cross_test1_loss, cross_test1_acc = cross_model.evaluate(np.transpose(X_test1_cross, axes=(0,2,1)), y_test1_cross, verbose=2)
+    cross_test2_loss, cross_test2_acc = cross_model.evaluate(np.transpose(X_test2_cross, axes=(0,2,1)), y_test2_cross, verbose=2)
+    cross_test3_loss, cross_test3_acc = cross_model.evaluate(np.transpose(X_test3_cross, axes=(0,2,1)), y_test3_cross, verbose=2)
 
     # Plots the two accuracies against the epochs
-    plt.plot(history.history['accuracy'], label='accuracy')
-    plt.plot(history.history['val_accuracy'], label = 'val_accuracy')
+    plt.plot(intra_history.history['accuracy'], label='Accuracy, intra')
+    plt.plot(intra_history.history['val_accuracy'], label = 'Validation accuracy, intra')
+    plt.plot(cross_history.history['accuracy'], label='Accuracy, cross')
+    plt.plot(cross_history.history['val_accuracy'], label = 'Validation accuracy, cross')
     plt.xlabel('Epoch')
+    plt.xticks(range(5))
     plt.ylabel('Accuracy')
-    plt.ylim([0.5, 1])
+    plt.ylim([0.4, 1.05])
     plt.legend(loc='lower right')
     plt.show()
+
+
 
 if __name__ == '__main__':
     main()
