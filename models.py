@@ -1,9 +1,4 @@
-import h5py
-import numpy as np
-from scipy.stats import zscore
-import os
 import tensorflow as tf
-import matplotlib.pyplot  as plt
 
 
 # Variables
@@ -32,11 +27,11 @@ def cnnmodel(input_shape=INPUT_SHAPE):
 
 RNN_UNITS = 32
 
-def rnnmodel(input_shape = INPUT_SHAPE):
+def rnnmodel(input_shape = INPUT_SHAPE, units_1 = RNN_UNITS, units_2 = RNN_UNITS):
     INPUT_SHAPE = input_shape
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.SimpleRNN(units=RNN_UNITS, activation='relu',input_shape=INPUT_SHAPE, return_sequences=True))
-    model.add(tf.keras.layers.SimpleRNN(units=RNN_UNITS, activation='relu'))
+    model.add(tf.keras.layers.SimpleRNN(units=units_1, activation='relu',input_shape=INPUT_SHAPE, return_sequences=True))
+    model.add(tf.keras.layers.SimpleRNN(units=units_2, activation='relu'))
     model.add(tf.keras.layers.Dense(NUM_CLASSES, activation='softmax'))
     
     return model
